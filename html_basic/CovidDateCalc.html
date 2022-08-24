@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>CovidDateCalc</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap');
+	</style>
+</head>
+<body>
+	<p>
+		<div style="font-size:15pt;color:black">구분<br>
+			<label><input type="radio" name="gubun" value="확진자" onclick="ginput()"> 확진자</label>
+			<label><input type="radio" name="gubun" value="수동감시자" onclick="ginput()"> 수동감시자</label>
+		</div>
+
+		<div style="font-size:15pt;color:skyblue">검체체취일(검사일)을 입력해주세요.<br>
+			<input id="nalzza" type="date">
+			<button onclick="ninput()">입력</button>
+		</div>
+
+		<textarea id="goutput" rows="10"></textarea><!---여기에 출력--->
+		<textarea id="d" rows="10"></textarea>
+		<textarea id="i" rows="10"></textarea>
+		<textarea id="m" rows="10"></textarea>
+
+		<script type="text/javascript">
+			var gtmp;//구분 저장
+
+			var year;
+			var day;
+			var month;
+
+			var dday;//등교날짜
+			var dmonth
+			var iday;//입사날짜
+			var imonth
+			var mday;//면제날짜
+			var mmonth
+			function 날짜계산(){
+				var lst31=[1,3,5,7,8,10,12];
+				var lst30=[4,6,9,11];
+				var lst28=[2];
+				var bbal=[0,59, 59,61,61,61,61,62,61,61,61,61,62];
+				dday=day+7;
+				iday=day+10;
+				mday=day+45;
+
+				//설마 해를 넘기지는 않겠죠?
+				if (lst31.indexOf(month)!=-1)//선택한 달이 31일으로 이루어져 있으면
+				{
+					if(dday>31){
+						dday=dday%31;
+						dmonth=dmonth+1;
+					}
+					if(iday>31){
+						iday=iday%31;
+						imonth=imonth+1;
+					}
+
+					if (mday-bbal[month]<=0){
+						mmonth=mmonth+1;
+						mday=mday%31;
+					}
+					else if(mday-bbal[month]>0){
+						mmonth=mmonth+2;
+						mday=mday-bbal[month];
+					}
+				}
+				else if(lst30.indexOf(month)!=-1)//선택한 달이 30일으로 이루어져 있으면
+				{
+					if(dday>30){
+						dday=dday%30;
+						dmonth=dmonth+1;
+					}
+					if(iday>30){
+						iday=iday%30;
+						imonth=imonth+1;
+					}
+					if (mday-bbal[month]<=0){
+						mmonth=mmonth+1;
+						mday=mday%30;
+					}
+					else if(mday-bbal[month]>0){
+						mmonth=mmonth+2;
+						mday=mday-bbal[month];
+					}
+				}
+				else if(lst28.indexOf(month)!=-1)//선택한 달이 28일으로 이루어져 있으면
+				{
+					if(dday>28){
+						dday=dday%28;
+						dmonth=dmonth+1;
+					}
+					if(iday>28){
+						iday=iday%28;
+						imonth=imonth+1;
+					}
+					if (mday-bbal[month]<=0){
+						mmonth=mmonth+1;
+						mday=mday%28;
+					}
+					else if(mday-bbal[month]>0){
+						mmonth=mmonth+2;
+						mday=mday-bbal[month];
+					}
+				}
+			}
+
+			function ginput(){
+				var glist=document.getElementsByName('gubun');
+				glist.forEach((node)=>{
+					if(node.checked){
+						gtmp=node.value;
+					}
+				})//라디오 버튼 값 읽어오기
+			}
+
+			function ninput(){  //날짜 읽어오기 
+				var n=document.getElementById('nalzza').value;
+				year=parseInt(n.substring(0,4));
+				month=parseInt(n.substring(5,7));
+				day=parseInt(n.substring(8,10));
+				dmonth=month
+				imonth=month
+				mmonth=month
+				output();
+			}
+
+
+			function output(){
+				날짜계산()
+				if (gtmp=="확진자"){
+					document.getElementById("goutput").value="확진자-\n7일간 등교중지 및 10일간 기숙사 입사 불가";
+					document.getElementById("d").value=String(year)+"년"+String(dmonth)+"월"+String(dday)+"일부터 등교 가능합니다."
+					document.getElementById("i").value=String(year)+"년"+String(imonth)+"월"+String(iday)+"일부터 기숙사 입사 가능합니다."
+					document.getElementById("m").value=String(year)+"년"+String(mmonth)+"월"+String(mday)+"일부터 신속항원검사 가능합니다."
+					
+				}
+				else if(gtmp=="수동감시자"){
+					document.getElementById("goutput").value="수동감시자-\n등교 가능 및 10일간 기숙사 입사 불가";
+					document.getElementById("d").value="바로 등교 가능합니다."
+					document.getElementById("i").value=String(year)+"년"+String(imonth)+"월"+String(iday)+"일부터 기숙사 입사 가능합니다."
+					document.getElementById("m").value="바로 신속항원검사 가능합니다."
+				}
+				
+			}
+			
+		</script>
+		<div style="text-align:center;font-size:10pt;color:gray">
+		2119 최시율 제작<br/>
+		</div>
+	</p>
+</body>
+</html>
